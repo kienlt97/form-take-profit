@@ -1,0 +1,154 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<div class="container">
+
+    <div class="row">
+        <hr />
+        <div class="col-lg-2">
+            <label for="desc">LONG / SHORT</label>
+        </div>
+        <div class="col-lg-2">
+            <select id="opt" class="form-control">
+                <option>LONG</option>
+                <option>SHORT</option>
+            </select>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="desc">Giá vào:</label>
+        </div>
+        <div class="col-lg-2">
+            <input type="number" class="form-control" id="entry_price" required>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="desc">Giá thoát:</label>
+        </div>
+        <div class="col-lg-2">
+            <input type="number" class="form-control" id="stop_price" required>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="desc">Tiền đầu tư ($):</label>
+        </div>
+        <div class="col-lg-2">
+            <input type="number" class="form-control" id="invest_money" required>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="desc">Đòn bẩy (x):</label>
+        </div>
+        <div class="col-lg-2">
+            <input type="number" class="form-control" id="lever" value="25" required>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="desc">Giới hạn thanh lý (%):</label>
+        </div>
+        <div class="col-lg-2">
+            <input type="number" class="form-control" id="limit_cut_loss" value="-40" required>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="desc">Phí ($):</label>
+        </div>
+        <div class="col-lg-2">
+            <input type="number" class="form-control" id="fee" value="0.01" required>
+        </div>
+    </div>
+    <br />
+    <hr />
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="desc">Giá thanh lý ($):</label>
+        </div>
+        <div class="col-lg-2">
+            <input type="number" class="form-control" id="cut_loss" readonly>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="desc">Tiền tạm tính ($):</label>
+        </div>
+        <div class="col-lg-2">
+            <input type="number" class="form-control" id="volume" readonly>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="desc">Tiền lời ($):</label>
+        </div>
+        <div class="col-lg-2">
+            <input type="number" class="form-control" id="profit" readonly>
+        </div>
+        <div class="col-lg-2">
+            <input type="text" class="form-control" id="profit_percent" readonly>
+        </div>
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-lg-2">
+            <button type="submit" name="submit" class="btn btn-success" onClick="Calc()">Submit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function Calc() {
+        var opt = document.getElementById("opt").value;
+        var entry_price = document.getElementById("entry_price").value;
+        var stop_price = document.getElementById("stop_price").value;
+       
+        var lever = document.getElementById("lever").value;
+        var limit_cut_loss = document.getElementById("limit_cut_loss").value;
+        var invest_money = document.getElementById("invest_money").value;
+        var fee = document.getElementById("fee").value;
+        
+        if (entry_price == "" || stop_price == "" || invest_money == "" || lever == "" || limit_cut_loss == "" || fee == "") {
+            alert("Thiếu dữ liệu. Kiểm tra lại !!!");
+            return false;
+        }
+
+        var profit = 0
+        if (opt === 'SHORT') {
+            profit =(entry_price-stop_price)/entry_price*lever*invest_money + fee*((entry_price-stop_price)/entry_price*lever*invest_money)
+            var cut_loss = entry_price-(limit_cut_loss*entry_price/(100*lever))
+            document.getElementById("profit").value = profit.toFixed(2);
+            document.getElementById("cut_loss").value = cut_loss.toFixed(2);
+         } else {
+            profit =(stop_price-entry_price)/entry_price*lever*invest_money - fee*((stop_price-entry_price)/entry_price*lever*invest_money)
+            var cut_loss = entry_price*(limit_cut_loss/(100*lever)+1)
+            document.getElementById("profit").value = profit.toFixed(2);
+            document.getElementById("cut_loss").value = cut_loss.toFixed(2);
+        }
+        var profit_percent = (profit/invest_money*100).toFixed(2) + ' %'
+        document.getElementById("profit_percent").value = profit_percent;
+
+        document.getElementById("profit_percent").style.backgroundColor = profit > 0 ? "green" : "red";
+        document.getElementById("profit").style.backgroundColor = profit > 0 ? "green" : "red";
+        document.getElementById("profit_percent").style.color = "white";
+        document.getElementById("profit").style.color = "white";
+
+        var volume = invest_money*lever
+        document.getElementById("volume").value = volume;
+
+
+        var ans = eval(val1 + opt + val2);
+        document.getElementById("ans").value = ans;
+    }
+</script>
